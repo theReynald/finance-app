@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinanceFlow — Application Documentation</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f8fafc;
+      --text: #1e293b;
+      --text-muted: #64748b;
+      --accent: #2563eb;
+      --accent-light: #dbeafe;
+      --border: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --code-border: #e2e8f0;
+      --green: #10b981;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --purple: #8b5cf6;
+      --radius: 10px;
+      --shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    }
+
+    body.dark {
+      --bg: #0f172a;
+      --bg-alt: #1e293b;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --accent: #60a5fa;
+      --accent-light: rgba(96,165,250,.15);
+      --border: #334155;
+      --code-bg: #1e293b;
+      --code-border: #334155;
+    }
+
+    html { scroll-behavior: smooth; font-size: 17px; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      transition: background .3s, color .3s;
+    }
+
+    /* ── Layout ── */
+    .page { display: flex; min-height: 100vh; }
+
+    /* ── Sidebar / Table of Contents ── */
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 280px; height: 100vh;
+      background: var(--bg-alt);
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      overflow-y: auto;
+      z-index: 100;
+      transition: background .3s, border-color .3s;
+    }
+    .sidebar-header { padding: 0 20px 16px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .sidebar-header h2 { font-size: 16px; font-weight: 700; color: var(--accent); }
+    .sidebar-header p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .toc { list-style: none; }
+    .toc li { margin: 0; }
+    .toc a {
+      display: block; padding: 7px 20px;
+      font-size: 13.5px; color: var(--text-muted);
+      text-decoration: none; border-left: 3px solid transparent;
+      transition: all .15s;
+    }
+    .toc a:hover, .toc a.active { color: var(--accent); background: var(--accent-light); border-left-color: var(--accent); }
+    .toc .section-label {
+      font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .08em; color: var(--text-muted); padding: 14px 20px 4px;
+      pointer-events: none;
+    }
+
+    /* ── Main Content ── */
+    .content { margin-left: 280px; flex: 1; padding: 40px 48px 80px; max-width: 900px; }
+
+    h1 { font-size: 2rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
+    h1 + .subtitle { font-size: 1.05rem; color: var(--text-muted); margin-bottom: 32px; }
+
+    h2 { font-size: 1.45rem; font-weight: 700; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+    h3 { font-size: 1.1rem; font-weight: 600; margin: 28px 0 10px; color: var(--accent); }
+    h4 { font-size: 0.95rem; font-weight: 600; margin: 20px 0 8px; }
+
+    p { margin-bottom: 14px; }
+    ul, ol { margin: 0 0 14px 24px; }
+    li { margin-bottom: 6px; }
+
+    /* ── Code Blocks ── */
+    pre {
+      background: var(--code-bg); border: 1px solid var(--code-border);
+      border-radius: var(--radius); padding: 16px 20px;
+      overflow-x: auto; font-size: 13.5px; line-height: 1.6;
+      margin: 12px 0 20px;
+    }
+    code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+      font-size: .88em;
+    }
+    :not(pre) > code {
+      background: var(--code-bg); padding: 2px 6px;
+      border-radius: 4px; border: 1px solid var(--code-border);
+    }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .92rem; }
+    th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { font-weight: 600; background: var(--bg-alt); font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; color: var(--text-muted); }
+    tr:hover td { background: var(--accent-light); }
+
+    /* ── Callout Boxes ── */
+    .callout {
+      border-radius: var(--radius); padding: 16px 20px;
+      margin: 16px 0 20px; border-left: 4px solid;
+      font-size: .92rem;
+    }
+    .callout-info { background: #dbeafe20; border-color: var(--accent); }
+    .callout-warn { background: #fef3c720; border-color: var(--amber); }
+    .callout-success { background: #d1fae520; border-color: var(--green); }
+    .callout-title { font-weight: 600; margin-bottom: 4px; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 9999px;
+      font-size: .72rem; font-weight: 600; letter-spacing: .02em;
+    }
+    .badge-blue { background: var(--accent-light); color: var(--accent); }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+    /* ── File tree ── */
+    .file-tree { font-family: 'SF Mono', Consolas, monospace; font-size: 13px; line-height: 1.8; }
+    .file-tree .folder { color: var(--accent); font-weight: 600; }
+    .file-tree .desc { color: var(--text-muted); font-style: italic; }
+
+    /* ── Theme Toggle ── */
+    .theme-toggle {
+      position: fixed; top: 16px; right: 20px;
+      background: var(--bg-alt); border: 1px solid var(--border);
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 18px; z-index: 200; transition: all .2s;
+    }
+    .theme-toggle:hover { background: var(--accent-light); }
+
+    /* ── Diagram containers ── */
+    .diagram {
+      background: var(--bg-alt); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px;
+      margin: 16px 0 20px; text-align: center;
+      font-family: 'SF Mono', Consolas, monospace; font-size: 13px;
+      white-space: pre; line-height: 1.5; overflow-x: auto;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .content { margin-left: 0; padding: 24px 20px 60px; }
+    }
+
+    /* ── Print ── */
+    @media print {
+      .sidebar, .theme-toggle { display: none; }
+      .content { margin-left: 0; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<button class="theme-toggle" aria-label="Toggle dark mode" onclick="document.body.classList.toggle('dark'); localStorage.setItem('docs-theme', document.body.classList.contains('dark') ? 'dark' : 'light')">🌙</button>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  SIDEBAR — TABLE OF CONTENTS               -->
+<!-- ════════════════════════════════════════════ -->
+<div class="page">
+<nav class="sidebar">
+  <div class="sidebar-header">
+    <h2>📘 FinanceFlow Docs</h2>
+    <p>v1.0 &mdash; Reference & Build Guide</p>
+  </div>
+  <ul class="toc">
+    <li class="section-label">Overview</li>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#tech-stack">Tech Stack</a></li>
+    <li><a href="#architecture">Architecture Overview</a></li>
+
+    <li class="section-label">Setup</li>
+    <li><a href="#prerequisites">Prerequisites</a></li>
+    <li><a href="#installation">Installation</a></li>
+    <li><a href="#dev-server">Running the Dev Server</a></li>
+    <li><a href="#production-build">Production Build</a></li>
+
+    <li class="section-label">Project Structure</li>
+    <li><a href="#file-tree">File Tree</a></li>
+    <li><a href="#config-files">Configuration Files</a></li>
+
+    <li class="section-label">Front-End Deep Dive</li>
+    <li><a href="#app-jsx">App.jsx — Root Component</a></li>
+    <li><a href="#header">Header Component</a></li>
+    <li><a href="#transaction-form">TransactionForm Component</a></li>
+    <li><a href="#transaction-list">TransactionList Component</a></li>
+    <li><a href="#charts">Charts Component</a></li>
+    <li><a href="#tip-of-the-day">TipOfTheDay Component</a></li>
+
+    <li class="section-label">Data Layer</li>
+    <li><a href="#data-model">Transaction Data Model</a></li>
+    <li><a href="#local-storage-hook">useLocalStorage Hook</a></li>
+    <li><a href="#helper-functions">Helper Functions</a></li>
+    <li><a href="#financial-tips-data">Financial Tips Data</a></li>
+
+    <li class="section-label">Styling & Theming</li>
+    <li><a href="#tailwind-config">Tailwind CSS v4 Config</a></li>
+    <li><a href="#dark-mode">Dark Mode Implementation</a></li>
+    <li><a href="#responsive-design">Responsive Design</a></li>
+    <li><a href="#color-system">Color System</a></li>
+
+    <li class="section-label">How-To Guides</li>
+    <li><a href="#build-from-scratch">Build from Scratch</a></li>
+    <li><a href="#adding-categories">Adding Categories</a></li>
+    <li><a href="#adding-tips">Adding Financial Tips</a></li>
+    <li><a href="#customizing-charts">Customizing Charts</a></li>
+
+    <li class="section-label">Reference</li>
+    <li><a href="#props-reference">Props Reference</a></li>
+    <li><a href="#localstorage-keys">localStorage Keys</a></li>
+    <li><a href="#dependencies">Dependencies</a></li>
+    <li><a href="#troubleshooting">Troubleshooting</a></li>
+  </ul>
+</nav>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  MAIN CONTENT                                -->
+<!-- ════════════════════════════════════════════ -->
+<main class="content">
+
+<!-- ─── INTRODUCTION ─── -->
+<h1 id="introduction">FinanceFlow Documentation</h1>
+<p class="subtitle">A modern personal budgeting app with financial literacy features — built with React, Vite, Tailwind CSS, and Chart.js.</p>
+
+<p>FinanceFlow is a client-side single-page application that helps users track income and expenses, visualize their spending with interactive charts, and build financial literacy through a curated "Tip of the Day" feature. All data is stored locally in the browser — no backend, no accounts, no servers required.</p>
+
+<div class="callout callout-info">
+  <div class="callout-title">📖 How to Use This Document</div>
+  This documentation serves two purposes:
+  <strong>(1)</strong> A <strong>step-by-step build guide</strong> — follow Section "Build from Scratch" to recreate the entire app by hand.
+  <strong>(2)</strong> A <strong>reference guide</strong> — use the Table of Contents to jump to any component, function, or configuration detail.
+</div>
+
+<!-- ─── FEATURES ─── -->
+<h2 id="features">Features</h2>
+<table>
+  <thead><tr><th>Feature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>💰 Income &amp; Expense Tracking</td><td>Add transactions with type, amount, category, description, and date. Delete any entry.</td></tr>
+    <tr><td>📊 Visual Analytics</td><td>Bar chart (monthly income vs expenses) and doughnut chart (expense breakdown by category), powered by Chart.js.</td></tr>
+    <tr><td>💡 Tip of the Day</td><td>54 curated financial literacy tips covering budgeting, investing, credit, debt, taxes, and more. A new tip each day plus a "New Tip" button.</td></tr>
+    <tr><td>📈 Balance Dashboard</td><td>Header shows total income, total expenses, and net balance at a glance.</td></tr>
+    <tr><td>🌙 Dark / Light Mode</td><td>Toggle between themes with a single click. Preference persists across sessions.</td></tr>
+    <tr><td>💾 Persistent Data</td><td>All transactions and settings saved in <code>localStorage</code> — survives page refreshes and browser restarts.</td></tr>
+    <tr><td>📱 Responsive Layout</td><td>Mobile-first design: stacked on small screens, 12-column grid on desktop.</td></tr>
+  </tbody>
+</table>
+
+<!-- ─── TECH STACK ─── -->
+<h2 id="tech-stack">Tech Stack</h2>
+<table>
+  <thead><tr><th>Technology</th><th>Version</th><th>Role</th></tr></thead>
+  <tbody>
+    <tr><td>React</td><td>^19.2</td><td>UI component framework</td></tr>
+    <tr><td>Vite</td><td>^8.0</td><td>Build tool &amp; dev server</td></tr>
+    <tr><td>Tailwind CSS</td><td>^4.2</td><td>Utility-first CSS framework</td></tr>
+    <tr><td>Chart.js</td><td>^4.5</td><td>Canvas-based charting library</td></tr>
+    <tr><td>react-chartjs-2</td><td>^5.3</td><td>React bindings for Chart.js</td></tr>
+    <tr><td>Lucide React</td><td>^1.7</td><td>Icon library (lightweight SVG icons)</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-success">
+  <div class="callout-title">🚫 No Backend Required</div>
+  This is a purely front-end application. There is no server, no database, no authentication. All data lives in the browser's <code>localStorage</code>. This makes it trivial to deploy as a static site on GitHub Pages, Netlify, Vercel, or any web server.
+</div>
+
+<!-- ─── ARCHITECTURE ─── -->
+<h2 id="architecture">Architecture Overview</h2>
+<p>The app follows a standard React component tree with state lifted to the root (<code>App.jsx</code>). Data flows down via props; user actions flow up via callback props.</p>
+
+<div class="diagram">
+                        ┌──────────────┐
+                        │   App.jsx    │  ← Global state (transactions, darkMode)
+                        │              │  ← useLocalStorage for persistence
+                        └──────┬───────┘
+                               │
+          ┌────────────┬───────┼────────────┬──────────────┐
+          ▼            ▼       ▼            ▼              ▼
+    ┌──────────┐ ┌──────────┐ ┌───────────┐ ┌──────────┐ ┌───────────┐
+    │  Header  │ │TipOfDay  │ │Transaction│ │Transaction│ │  Charts   │
+    │          │ │          │ │  Form     │ │  List     │ │           │
+    │• totals  │ │• self-   │ │• onAdd    │ │• data     │ │• data     │
+    │• toggle  │ │  managed │ │  callback │ │• onDelete │ │• darkMode │
+    └──────────┘ └──────────┘ └───────────┘ └──────────┘ └───────────┘
+</div>
+
+<h3>Data Flow</h3>
+<ol>
+  <li><strong>User adds a transaction</strong> → <code>TransactionForm</code> calls <code>onAdd(transaction)</code> → <code>App.jsx</code> appends to <code>transactions</code> state → <code>useLocalStorage</code> writes to <code>localStorage</code>.</li>
+  <li><strong>User deletes a transaction</strong> → <code>TransactionList</code> calls <code>onDelete(id)</code> → <code>App.jsx</code> filters out the transaction.</li>
+  <li><strong>Charts update reactively</strong> — whenever <code>transactions</code> state changes, React re-renders <code>Charts</code> with fresh computed data.</li>
+  <li><strong>Tip of the Day</strong> manages its own state internally via <code>localStorage</code> (independent of the transaction data).</li>
+</ol>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  SETUP                                          -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="prerequisites">Prerequisites</h2>
+<ul>
+  <li><strong>Node.js</strong> — version 18 or higher (<code>node -v</code> to check)</li>
+  <li><strong>npm</strong> — version 9 or higher (comes with Node.js)</li>
+  <li><strong>A modern browser</strong> — Chrome, Firefox, Safari, or Edge</li>
+  <li><strong>A code editor</strong> — VS Code recommended</li>
+</ul>
+
+<h2 id="installation">Installation</h2>
+<p>Clone the repository and install dependencies:</p>
+<pre><code>git clone https://github.com/theReynald/finance-app.git
+cd finance-app
+npm install</code></pre>
+
+<p>This installs all production and development dependencies listed in <code>package.json</code>.</p>
+
+<h2 id="dev-server">Running the Dev Server</h2>
+<pre><code>npm run dev</code></pre>
+<p>Vite starts a local development server (typically at <code>http://localhost:5173</code>). The page auto-refreshes on any file change thanks to Vite's Hot Module Replacement (HMR).</p>
+
+<h2 id="production-build">Production Build</h2>
+<pre><code>npm run build</code></pre>
+<p>Outputs optimized static files to the <code>dist/</code> folder. To preview the production build locally:</p>
+<pre><code>npm run preview</code></pre>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  PROJECT STRUCTURE                              -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="file-tree">File Tree</h2>
+<div class="file-tree">
+<pre>finance-app/
+├── <span class="folder">public/</span>
+│   └── favicon.svg              <span class="desc">— Wallet icon SVG favicon</span>
+├── <span class="folder">src/</span>
+│   ├── <span class="folder">components/</span>
+│   │   ├── Header.jsx           <span class="desc">— Balance summary + dark mode toggle</span>
+│   │   ├── TransactionForm.jsx  <span class="desc">— Income/expense entry form</span>
+│   │   ├── TransactionList.jsx  <span class="desc">— Scrollable transaction history</span>
+│   │   ├── Charts.jsx           <span class="desc">— Bar chart + doughnut chart</span>
+│   │   └── TipOfTheDay.jsx      <span class="desc">— Financial literacy tip card</span>
+│   ├── <span class="folder">data/</span>
+│   │   └── financialTips.js     <span class="desc">— Array of 54 curated financial tips</span>
+│   ├── <span class="folder">hooks/</span>
+│   │   └── useLocalStorage.js   <span class="desc">— Custom hook: persistent state via localStorage</span>
+│   ├── <span class="folder">utils/</span>
+│   │   └── helpers.js           <span class="desc">— Currency formatting, calculations, category lists</span>
+│   ├── App.jsx                  <span class="desc">— Root component, layout, state management</span>
+│   ├── main.jsx                 <span class="desc">— React entry point (renders App into #root)</span>
+│   └── index.css                <span class="desc">— Tailwind v4 import + custom theme + dark mode config</span>
+├── <span class="folder">docs/</span>
+│   └── index.html               <span class="desc">— This documentation file</span>
+├── index.html                   <span class="desc">— HTML entry point (loads main.jsx via &lt;script&gt;)</span>
+├── vite.config.js               <span class="desc">— Vite build configuration</span>
+├── package.json                 <span class="desc">— Dependencies and npm scripts</span>
+└── eslint.config.js             <span class="desc">— ESLint configuration</span>
+</pre>
+</div>
+
+<h2 id="config-files">Configuration Files</h2>
+
+<h3>vite.config.js</h3>
+<p>Registers two Vite plugins: the React plugin (for JSX transform and Fast Refresh) and the Tailwind CSS v4 plugin (replaces the old PostCSS setup).</p>
+<pre><code>import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})</code></pre>
+
+<h3>package.json (scripts)</h3>
+<table>
+  <thead><tr><th>Script</th><th>Command</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>dev</code></td><td><code>vite</code></td><td>Start development server with HMR</td></tr>
+    <tr><td><code>build</code></td><td><code>vite build</code></td><td>Create optimized production build in <code>dist/</code></td></tr>
+    <tr><td><code>preview</code></td><td><code>vite preview</code></td><td>Preview the production build locally</td></tr>
+    <tr><td><code>lint</code></td><td><code>eslint .</code></td><td>Run ESLint across all files</td></tr>
+  </tbody>
+</table>
+
+<h3>index.html (entry point)</h3>
+<p>The root HTML file that Vite serves. It loads the Inter font from Google Fonts and includes a single <code>&lt;script type="module"&gt;</code> tag pointing to <code>src/main.jsx</code>. React renders into the <code>&lt;div id="root"&gt;</code> element.</p>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  FRONT-END DEEP DIVE                           -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="app-jsx">App.jsx — Root Component</h2>
+<p><span class="badge badge-blue">STATE OWNER</span> <span class="badge badge-purple">LAYOUT</span></p>
+
+<h3>Responsibilities</h3>
+<ol>
+  <li><strong>State management</strong> — owns two pieces of state: <code>transactions</code> (array) and <code>darkMode</code> (boolean), both persisted via <code>useLocalStorage</code>.</li>
+  <li><strong>Derived data</strong> — computes <code>totals</code> (income, expenses, balance) on every render using <code>calculateTotals()</code>.</li>
+  <li><strong>Event handlers</strong> — defines <code>addTransaction</code>, <code>deleteTransaction</code>, and <code>toggleDarkMode</code>, each wrapped in <code>useCallback</code> for performance.</li>
+  <li><strong>Layout</strong> — assembles the responsive page layout using Tailwind's grid system.</li>
+</ol>
+
+<h3>State Variables</h3>
+<table>
+  <thead><tr><th>Variable</th><th>Type</th><th>localStorage Key</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>transactions</code></td><td><code>Array&lt;Transaction&gt;</code></td><td><code>financeflow_transactions</code></td><td>All income and expense entries</td></tr>
+    <tr><td><code>darkMode</code></td><td><code>boolean</code></td><td><code>financeflow_darkmode</code></td><td>Current theme preference</td></tr>
+  </tbody>
+</table>
+
+<h3>Layout Structure</h3>
+<pre><code>&lt;div class="dark"&gt;                     ← Conditional dark class
+  &lt;div class="min-h-screen bg-bg"&gt;     ← Full-page background
+    &lt;div class="max-w-7xl mx-auto"&gt;    ← Centered container
+      &lt;Header /&gt;                       ← Balance summary
+      &lt;TipOfTheDay /&gt;                  ← Financial literacy tip
+      &lt;div class="grid lg:grid-cols-12"&gt;
+        &lt;div class="lg:col-span-5"&gt;    ← Left column
+          &lt;TransactionForm /&gt;
+          &lt;TransactionList /&gt;
+        &lt;/div&gt;
+        &lt;div class="lg:col-span-7"&gt;    ← Right column
+          &lt;Charts /&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;footer /&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+
+<!-- ─── HEADER ─── -->
+<h2 id="header">Header Component</h2>
+<p><span class="badge badge-green">UI</span> <strong>File:</strong> <code>src/components/Header.jsx</code></p>
+
+<h3>Purpose</h3>
+<p>Displays the app title, three summary cards (total income, total expenses, net balance), and a dark mode toggle button. Uses a gradient background (<code>from-primary-600 to-primary-800</code>) with glassmorphism cards (<code>bg-white/10 backdrop-blur-sm</code>).</p>
+
+<h3>Props</h3>
+<table>
+  <thead><tr><th>Prop</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>totals</code></td><td><code>{ income, expenses, balance }</code></td><td>Aggregate financial totals computed in App.jsx</td></tr>
+    <tr><td><code>darkMode</code></td><td><code>boolean</code></td><td>Current theme state (controls sun/moon icon)</td></tr>
+    <tr><td><code>onToggleDarkMode</code></td><td><code>() =&gt; void</code></td><td>Callback to flip the theme</td></tr>
+  </tbody>
+</table>
+
+<h3>Visual Behavior</h3>
+<ul>
+  <li>Balance text turns <strong>green</strong> (<code>text-green-300</code>) when positive, <strong>red</strong> (<code>text-red-300</code>) when negative.</li>
+  <li>On mobile, the three cards stack vertically. On <code>sm:</code> screens and above, they display in a 3-column grid.</li>
+  <li>Dark mode toggle shows a moon icon (🌙) in light mode and a sun icon (☀️) in dark mode.</li>
+</ul>
+
+<h3>Icons Used</h3>
+<p><code>TrendingUp</code>, <code>TrendingDown</code>, <code>Wallet</code>, <code>Sun</code>, <code>Moon</code> — all from <code>lucide-react</code>.</p>
+
+<!-- ─── TRANSACTION FORM ─── -->
+<h2 id="transaction-form">TransactionForm Component</h2>
+<p><span class="badge badge-green">UI</span> <span class="badge badge-red">INPUT</span> <strong>File:</strong> <code>src/components/TransactionForm.jsx</code></p>
+
+<h3>Purpose</h3>
+<p>A form for adding new income or expense transactions. Manages its own local form state (type, amount, category, description, date) and emits a complete transaction object via the <code>onAdd</code> callback on submission.</p>
+
+<h3>Props</h3>
+<table>
+  <thead><tr><th>Prop</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>onAdd</code></td><td><code>(transaction) =&gt; void</code></td><td>Called with a new transaction object when the form is submitted</td></tr>
+  </tbody>
+</table>
+
+<h3>Form Fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Type</td><td>Toggle buttons</td><td>Yes</td><td>Switches between "Income" and "Expense". Changes the category dropdown options.</td></tr>
+    <tr><td>Amount</td><td><code>&lt;input type="number"&gt;</code></td><td>Yes</td><td>Minimum: 0.01, step: 0.01</td></tr>
+    <tr><td>Category</td><td><code>&lt;select&gt;</code></td><td>Yes</td><td>Options populated from <code>INCOME_CATEGORIES</code> or <code>EXPENSE_CATEGORIES</code> depending on type</td></tr>
+    <tr><td>Description</td><td><code>&lt;input type="text"&gt;</code></td><td>No</td><td>Max 100 characters. Falls back to category name if empty.</td></tr>
+    <tr><td>Date</td><td><code>&lt;input type="date"&gt;</code></td><td>Yes</td><td>Defaults to today's date</td></tr>
+  </tbody>
+</table>
+
+<h3>Validation Logic</h3>
+<pre><code>const parsedAmount = parseFloat(amount);
+if (!parsedAmount || parsedAmount &lt;= 0 || !category || !date) return;</code></pre>
+<p>The form silently rejects submissions with missing/invalid data. HTML5 <code>required</code> attributes provide browser-native validation as a first line of defense.</p>
+
+<h3>Post-Submit Behavior</h3>
+<p>After a successful submission, all fields are reset: amount, category, and description cleared; date reset to today. The type toggle (income/expense) is preserved.</p>
+
+<!-- ─── TRANSACTION LIST ─── -->
+<h2 id="transaction-list">TransactionList Component</h2>
+<p><span class="badge badge-green">UI</span> <strong>File:</strong> <code>src/components/TransactionList.jsx</code></p>
+
+<h3>Purpose</h3>
+<p>Renders a scrollable, chronologically sorted list of all transactions. Each row is color-coded: green for income, red for expenses. A delete button appears on hover.</p>
+
+<h3>Props</h3>
+<table>
+  <thead><tr><th>Prop</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>transactions</code></td><td><code>Array&lt;Transaction&gt;</code></td><td>Full list of all transactions</td></tr>
+    <tr><td><code>onDelete</code></td><td><code>(id: string) =&gt; void</code></td><td>Called with the transaction ID when delete is clicked</td></tr>
+  </tbody>
+</table>
+
+<h3>Behavior</h3>
+<ul>
+  <li><strong>Sorting</strong> — transactions are sorted by date descending (newest first) via <code>[...transactions].sort()</code>.</li>
+  <li><strong>Empty state</strong> — when no transactions exist, shows a friendly message with a 📊 emoji and instructions to add the first transaction.</li>
+  <li><strong>Scrollable</strong> — the list has a max height of 420px (<code>max-h-[420px]</code>) with overflow scrolling.</li>
+  <li><strong>Delete on hover</strong> — the trash icon is <code>opacity-0</code> by default and <code>group-hover:opacity-100</code> when hovering the row.</li>
+  <li><strong>Transaction count badge</strong> — shows "<em>N</em> total" in a pill badge in the header.</li>
+</ul>
+
+<h3>Row Layout</h3>
+<p>Each row displays: direction icon (↗ or ↘) | category + description + date | formatted amount | delete button.</p>
+
+<!-- ─── CHARTS ─── -->
+<h2 id="charts">Charts Component</h2>
+<p><span class="badge badge-blue">VISUALIZATION</span> <strong>File:</strong> <code>src/components/Charts.jsx</code></p>
+
+<h3>Purpose</h3>
+<p>Renders two Chart.js visualizations: a <strong>bar chart</strong> comparing monthly income vs expenses, and a <strong>doughnut chart</strong> showing expense breakdown by category.</p>
+
+<h3>Props</h3>
+<table>
+  <thead><tr><th>Prop</th><th>Type</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>transactions</code></td><td><code>Array&lt;Transaction&gt;</code></td><td>Full transaction list — filtered and aggregated internally</td></tr>
+    <tr><td><code>darkMode</code></td><td><code>boolean</code></td><td>Adapts text colors, grid colors, and tooltip styles for the current theme</td></tr>
+  </tbody>
+</table>
+
+<h3>Chart.js Registration</h3>
+<p>The component registers the required Chart.js modules at the top level:</p>
+<pre><code>ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);</code></pre>
+<p>This is required by Chart.js v4's tree-shakable architecture — only import what you use.</p>
+
+<h3>Bar Chart — Monthly Income vs Expenses</h3>
+<ul>
+  <li><strong>Data source:</strong> <code>groupByMonth(transactions)</code> from helpers — groups transactions by year-month and sums amounts by type.</li>
+  <li><strong>Datasets:</strong> Two bars per month — green (#10b981) for income, red (#ef4444) for expenses.</li>
+  <li><strong>Features:</strong> Rounded corners (<code>borderRadius: 6</code>), currency-formatted Y axis, custom tooltips.</li>
+  <li><strong>Empty state:</strong> Shows a 📈 icon with "Add transactions to see your monthly breakdown".</li>
+</ul>
+
+<h3>Doughnut Chart — Expense Breakdown by Category</h3>
+<ul>
+  <li><strong>Data source:</strong> <code>groupByCategory(expenses)</code> from helpers — sums expense amounts per category.</li>
+  <li><strong>Colors:</strong> 15-color palette cycling through categories.</li>
+  <li><strong>Features:</strong> 65% cutout (ring style), hover offset animation, bottom legend.</li>
+  <li><strong>Empty state:</strong> Shows a 🍩 icon with "Add expenses to see category breakdown".</li>
+</ul>
+
+<h3>Dark Mode Adaptation</h3>
+<p>Text colors, grid colors, tooltip backgrounds, and tooltip borders all adjust based on the <code>darkMode</code> prop. The Chart.js config objects are rebuilt on each render with the appropriate color values.</p>
+
+<!-- ─── TIP OF THE DAY ─── -->
+<h2 id="tip-of-the-day">TipOfTheDay Component</h2>
+<p><span class="badge badge-purple">FEATURE</span> <strong>File:</strong> <code>src/components/TipOfTheDay.jsx</code></p>
+
+<h3>Purpose</h3>
+<p>Displays a single financial literacy tip from a curated list of 54. Shows a new tip each calendar day, with a "New Tip" button to cycle manually. Entirely self-contained — manages its own state.</p>
+
+<h3>Props</h3>
+<p>None. This component is self-managed.</p>
+
+<h3>Tip Selection Logic</h3>
+<pre><code>// On mount: check localStorage for today's saved tip
+const saved = localStorage.getItem('financeflow_tip');
+if (saved) {
+  const { index, date } = JSON.parse(saved);
+  if (date === today) return index;       // Reuse today's tip
+}
+// Otherwise, compute a deterministic daily index
+const dailyIndex = Math.floor(Date.now() / 86400000) % financialTips.length;</code></pre>
+
+<ul>
+  <li><strong>Daily rotation:</strong> Uses the current day number (milliseconds / 86400000) modulo the array length to pick a tip. This ensures a new tip each day without server communication.</li>
+  <li><strong>"New Tip" button:</strong> Picks a random index (excluding the current one to avoid repeats) and saves it to localStorage.</li>
+  <li><strong>Persistence:</strong> The current tip index and date are stored in <code>localStorage</code> under <code>financeflow_tip</code>. If the user refreshes, they see the same tip. On a new calendar day, a new tip is automatically selected.</li>
+</ul>
+
+<h3>Visual Design</h3>
+<p>Warm amber/orange gradient background with a lightbulb icon. Each tip has a title, category badge, and the tip text. The card stands out visually from the blue/gray palette of the rest of the app.</p>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  DATA LAYER                                     -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="data-model">Transaction Data Model</h2>
+<p>Each transaction is a plain JavaScript object with the following shape:</p>
+<pre><code>{
+  id: "m1abc2def3",            // Unique ID (timestamp + random string)
+  type: "income" | "expense",  // Transaction direction
+  amount: 1500.00,             // Positive number (dollars)
+  category: "Salary",          // From predefined category list
+  description: "March pay",    // User-entered text (optional, max 100 chars)
+  date: "2026-03-25"           // ISO date string (YYYY-MM-DD)
+}</code></pre>
+
+<h3>ID Generation</h3>
+<pre><code>export function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+}</code></pre>
+<p>Combines a timestamp (base-36 encoded) with a random suffix. This produces IDs like <code>m1abc2def3ghij</code> that are unique enough for client-side use without a UUID library.</p>
+
+<h3>Category Presets</h3>
+<table>
+  <thead><tr><th>Income Categories (7)</th><th>Expense Categories (15)</th></tr></thead>
+  <tbody>
+    <tr><td>Salary</td><td>Housing</td></tr>
+    <tr><td>Freelance</td><td>Food &amp; Groceries</td></tr>
+    <tr><td>Investments</td><td>Transportation</td></tr>
+    <tr><td>Rental Income</td><td>Utilities</td></tr>
+    <tr><td>Side Hustle</td><td>Healthcare</td></tr>
+    <tr><td>Gifts</td><td>Entertainment</td></tr>
+    <tr><td>Other Income</td><td>Shopping</td></tr>
+    <tr><td></td><td>Education</td></tr>
+    <tr><td></td><td>Insurance</td></tr>
+    <tr><td></td><td>Savings</td></tr>
+    <tr><td></td><td>Debt Payments</td></tr>
+    <tr><td></td><td>Personal Care</td></tr>
+    <tr><td></td><td>Travel</td></tr>
+    <tr><td></td><td>Subscriptions</td></tr>
+    <tr><td></td><td>Other</td></tr>
+  </tbody>
+</table>
+
+<!-- ─── useLocalStorage Hook ─── -->
+<h2 id="local-storage-hook">useLocalStorage Hook</h2>
+<p><strong>File:</strong> <code>src/hooks/useLocalStorage.js</code></p>
+
+<h3>Signature</h3>
+<pre><code>function useLocalStorage(key: string, initialValue: any): [value, setValue]</code></pre>
+
+<h3>How It Works</h3>
+<ol>
+  <li><strong>Initialization:</strong> On first render, checks <code>localStorage</code> for an existing value under <code>key</code>. If found, parses the JSON and uses it. Otherwise, falls back to <code>initialValue</code>.</li>
+  <li><strong>Write-through:</strong> A <code>useEffect</code> runs whenever the value changes, serializing it to JSON and writing it to <code>localStorage</code>.</li>
+  <li><strong>Error resilience:</strong> Both read and write operations are wrapped in <code>try/catch</code>. If <code>localStorage</code> is unavailable (private browsing, storage full), the hook degrades gracefully to in-memory state.</li>
+</ol>
+
+<h3>Full Source</h3>
+<pre><code>import { useState, useEffect } from 'react';
+
+export function useLocalStorage(key, initialValue) {
+  const [storedValue, setStoredValue] = useState(() =&gt; {
+    try {
+      const item = window.localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch {
+      return initialValue;
+    }
+  });
+
+  useEffect(() =&gt; {
+    try {
+      window.localStorage.setItem(key, JSON.stringify(storedValue));
+    } catch {
+      // Silently fail if localStorage is full or unavailable
+    }
+  }, [key, storedValue]);
+
+  return [storedValue, setStoredValue];
+}</code></pre>
+
+<!-- ─── HELPER FUNCTIONS ─── -->
+<h2 id="helper-functions">Helper Functions</h2>
+<p><strong>File:</strong> <code>src/utils/helpers.js</code></p>
+
+<table>
+  <thead><tr><th>Function</th><th>Signature</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><code>formatCurrency</code></td>
+      <td><code>(amount: number) → string</code></td>
+      <td>Formats a number as US currency using <code>Intl.NumberFormat</code>. Example: <code>1500 → "$1,500.00"</code></td>
+    </tr>
+    <tr>
+      <td><code>calculateTotals</code></td>
+      <td><code>(transactions) → { income, expenses, balance }</code></td>
+      <td>Sums all income entries, sums all expense entries, and computes the difference.</td>
+    </tr>
+    <tr>
+      <td><code>groupByCategory</code></td>
+      <td><code>(transactions) → { [category]: totalAmount }</code></td>
+      <td>Returns an object mapping category names to summed amounts. Used for the doughnut chart.</td>
+    </tr>
+    <tr>
+      <td><code>groupByMonth</code></td>
+      <td><code>(transactions) → Array&lt;{ month, income, expenses }&gt;</code></td>
+      <td>Groups transactions by year-month, sums by type, and returns sorted by date. Used for the bar chart.</td>
+    </tr>
+    <tr>
+      <td><code>generateId</code></td>
+      <td><code>() → string</code></td>
+      <td>Generates a unique client-side ID using timestamp + random characters.</td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- ─── FINANCIAL TIPS ─── -->
+<h2 id="financial-tips-data">Financial Tips Data</h2>
+<p><strong>File:</strong> <code>src/data/financialTips.js</code></p>
+<p>A static JavaScript array containing 54 curated financial literacy tips. Each tip is an object:</p>
+
+<pre><code>{
+  title: "The 50/30/20 Rule",
+  tip: "Allocate 50% of your income to needs, 30% to wants, and 20% to savings...",
+  category: "Budgeting"
+}</code></pre>
+
+<h3>Tip Categories</h3>
+<table>
+  <thead><tr><th>Category</th><th>Count</th><th>Topics Covered</th></tr></thead>
+  <tbody>
+    <tr><td>Budgeting</td><td>6</td><td>50/30/20 rule, envelope system, net income, tracking, automation, sinking funds</td></tr>
+    <tr><td>Savings</td><td>3</td><td>Pay yourself first, emergency funds, high-yield savings accounts</td></tr>
+    <tr><td>Investing</td><td>8</td><td>Compound interest, index funds, 401(k) match, Roth IRA, dollar-cost averaging, 3-fund portfolio, time in market</td></tr>
+    <tr><td>Spending</td><td>8</td><td>Latte factor, 24-hour rule, needs vs wants, subscriptions, negotiation, lifestyle inflation, meal planning, car payments</td></tr>
+    <tr><td>Debt</td><td>4</td><td>Avalanche method, snowball method, good vs bad debt, minimum payments</td></tr>
+    <tr><td>Credit</td><td>4</td><td>Credit score factors, utilization, credit reports, identity theft protection</td></tr>
+    <tr><td>Taxes</td><td>3</td><td>Tax-advantaged accounts, HSAs, tax brackets</td></tr>
+    <tr><td>Planning</td><td>5</td><td>SMART goals, safety net stages, insurance, estate planning, money dates</td></tr>
+    <tr><td>Literacy</td><td>5</td><td>APR vs APY, net worth, inflation, opportunity cost, hidden fees</td></tr>
+    <tr><td>Income</td><td>2</td><td>Multiple income streams, investing in yourself</td></tr>
+    <tr><td>Mindset</td><td>2</td><td>Comparison, saying no to peer pressure</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  STYLING & THEMING                              -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="tailwind-config">Tailwind CSS v4 Configuration</h2>
+<p><strong>File:</strong> <code>src/index.css</code></p>
+
+<p>Tailwind v4 uses CSS-native configuration instead of a <code>tailwind.config.js</code> file. The setup is done entirely in the CSS file:</p>
+
+<pre><code>@import "tailwindcss";                              /* Load Tailwind v4 */
+@custom-variant dark (&amp;:where(.dark, .dark *));     /* Class-based dark mode */
+
+@theme {
+  --color-primary-50: #eff6ff;    /* Blue palette (10 shades) */
+  --color-primary-600: #2563eb;
+  ...
+  --color-income: #10b981;        /* Green for income */
+  --color-expense: #ef4444;       /* Red for expenses */
+  --color-surface: #ffffff;       /* Card backgrounds */
+  --color-bg: #f1f5f9;           /* Page background */
+  --color-text: #334155;          /* Body text */
+  ...
+}</code></pre>
+
+<h3>Key Differences from Tailwind v3</h3>
+<table>
+  <thead><tr><th>Tailwind v3</th><th>Tailwind v4</th></tr></thead>
+  <tbody>
+    <tr><td><code>tailwind.config.js</code> file</td><td><code>@theme { }</code> block in CSS</td></tr>
+    <tr><td><code>postcss.config.js</code> required</td><td><code>@tailwindcss/vite</code> plugin handles everything</td></tr>
+    <tr><td><code>darkMode: 'class'</code> in config</td><td><code>@custom-variant dark (...)</code> in CSS</td></tr>
+    <tr><td><code>@tailwind base/components/utilities</code></td><td><code>@import "tailwindcss"</code></td></tr>
+  </tbody>
+</table>
+
+<h2 id="dark-mode">Dark Mode Implementation</h2>
+
+<h3>How It Works (3 layers)</h3>
+<ol>
+  <li><strong>State:</strong> <code>App.jsx</code> stores <code>darkMode</code> as a boolean in <code>useLocalStorage('financeflow_darkmode', false)</code>.</li>
+  <li><strong>CSS class:</strong> The outermost <code>&lt;div&gt;</code> in App gets <code>className={darkMode ? 'dark' : ''}</code>. When <code>'dark'</code> is present, all <code>dark:</code> utilities activate.</li>
+  <li><strong>Tailwind variant:</strong> <code>@custom-variant dark (&amp;:where(.dark, .dark *))</code> in <code>index.css</code> tells Tailwind to match the <code>.dark</code> class on any ancestor (not the OS <code>prefers-color-scheme</code> media query).</li>
+</ol>
+
+<h3>Usage in Components</h3>
+<pre><code>&lt;!-- Light background, dark background when .dark is present --&gt;
+&lt;div class="bg-surface dark:bg-surface-dark"&gt;
+
+&lt;!-- Light text, dark text when .dark is present --&gt;
+&lt;p class="text-text dark:text-text-dark"&gt;</code></pre>
+
+<h2 id="responsive-design">Responsive Design</h2>
+<p>The layout uses Tailwind's mobile-first breakpoints:</p>
+<table>
+  <thead><tr><th>Breakpoint</th><th>Width</th><th>Layout Change</th></tr></thead>
+  <tbody>
+    <tr><td>Default</td><td>&lt; 640px</td><td>Single column, stacked layout</td></tr>
+    <tr><td><code>sm:</code></td><td>≥ 640px</td><td>Header summary cards go side-by-side (3 columns)</td></tr>
+    <tr><td><code>lg:</code></td><td>≥ 1024px</td><td>Main content splits into 5/12 + 7/12 grid columns</td></tr>
+  </tbody>
+</table>
+
+<h2 id="color-system">Color System</h2>
+<table>
+  <thead><tr><th>Token</th><th>Light Value</th><th>Usage</th></tr></thead>
+  <tbody>
+    <tr><td><code>primary-*</code></td><td>#eff6ff → #1e3a8a</td><td>Brand blue palette (header gradient, focus rings, accents)</td></tr>
+    <tr><td><code>income</code></td><td>#10b981 (emerald)</td><td>Income amounts, income button active state, bar chart</td></tr>
+    <tr><td><code>expense</code></td><td>#ef4444 (red)</td><td>Expense amounts, expense button active state, bar chart</td></tr>
+    <tr><td><code>surface</code></td><td>#ffffff / #1e293b</td><td>Card backgrounds (light / dark)</td></tr>
+    <tr><td><code>bg</code></td><td>#f1f5f9 / #0f172a</td><td>Page background (light / dark)</td></tr>
+    <tr><td><code>text</code></td><td>#334155 / #e2e8f0</td><td>Primary text (light / dark)</td></tr>
+    <tr><td><code>text-muted</code></td><td>#94a3b8</td><td>Secondary/helper text</td></tr>
+    <tr><td><code>border</code></td><td>#e2e8f0 / #334155</td><td>Card and input borders (light / dark)</td></tr>
+  </tbody>
+</table>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  HOW-TO GUIDES                                  -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="build-from-scratch">Build from Scratch — Step by Step</h2>
+<p>Follow these steps to recreate the entire application from an empty directory.</p>
+
+<h3>Step 1: Scaffold the Project</h3>
+<pre><code>mkdir finance-app && cd finance-app
+npx create-vite@latest . --template react --overwrite
+npm install</code></pre>
+
+<h3>Step 2: Install Dependencies</h3>
+<pre><code>npm install chart.js react-chartjs-2 lucide-react tailwindcss @tailwindcss/vite</code></pre>
+
+<h3>Step 3: Configure Vite</h3>
+<p>Edit <code>vite.config.js</code> to add the Tailwind plugin:</p>
+<pre><code>import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+})</code></pre>
+
+<h3>Step 4: Set Up Tailwind CSS</h3>
+<p>Replace the contents of <code>src/index.css</code> with:</p>
+<pre><code>@import "tailwindcss";
+@custom-variant dark (&amp;:where(.dark, .dark *));
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-income: #10b981;
+  --color-income-light: #d1fae5;
+  --color-expense: #ef4444;
+  --color-expense-light: #fee2e2;
+  --color-surface: #ffffff;
+  --color-surface-dark: #1e293b;
+  --color-bg: #f1f5f9;
+  --color-bg-dark: #0f172a;
+  --color-text: #334155;
+  --color-text-dark: #e2e8f0;
+  --color-text-muted: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-border-dark: #334155;
+}</code></pre>
+
+<h3>Step 5: Create the Folder Structure</h3>
+<pre><code>mkdir -p src/components src/data src/hooks src/utils</code></pre>
+
+<h3>Step 6: Create the useLocalStorage Hook</h3>
+<p>Create <code>src/hooks/useLocalStorage.js</code>. This custom hook wraps <code>useState</code> with automatic <code>localStorage</code> persistence. See the <a href="#local-storage-hook">useLocalStorage Hook</a> section for the full source code.</p>
+
+<h3>Step 7: Create Helper Utilities</h3>
+<p>Create <code>src/utils/helpers.js</code> with the following exports:</p>
+<ul>
+  <li><code>formatCurrency(amount)</code> — formats numbers as USD currency strings</li>
+  <li><code>calculateTotals(transactions)</code> — computes income, expenses, and balance</li>
+  <li><code>groupByCategory(transactions)</code> — aggregates amounts by category</li>
+  <li><code>groupByMonth(transactions)</code> — aggregates by year-month for the bar chart</li>
+  <li><code>generateId()</code> — creates unique IDs for new transactions</li>
+  <li><code>INCOME_CATEGORIES</code> — array of 7 income category strings</li>
+  <li><code>EXPENSE_CATEGORIES</code> — array of 15 expense category strings</li>
+</ul>
+<p>See the <a href="#helper-functions">Helper Functions</a> section for full implementations.</p>
+
+<h3>Step 8: Create the Financial Tips Data</h3>
+<p>Create <code>src/data/financialTips.js</code> — an array of 54 tip objects, each with <code>title</code>, <code>tip</code>, and <code>category</code>. See the <a href="#financial-tips-data">Financial Tips Data</a> section.</p>
+
+<h3>Step 9: Build the Components</h3>
+<p>Create each component file under <code>src/components/</code>. Build them in this order (each is independent — they only depend on helpers and data, not each other):</p>
+<ol>
+  <li><strong><code>Header.jsx</code></strong> — gradient header with balance cards and dark mode toggle. See <a href="#header">Header</a>.</li>
+  <li><strong><code>TransactionForm.jsx</code></strong> — income/expense entry form with validation. See <a href="#transaction-form">TransactionForm</a>.</li>
+  <li><strong><code>TransactionList.jsx</code></strong> — scrollable transaction list with delete. See <a href="#transaction-list">TransactionList</a>.</li>
+  <li><strong><code>Charts.jsx</code></strong> — bar chart + doughnut chart. See <a href="#charts">Charts</a>.</li>
+  <li><strong><code>TipOfTheDay.jsx</code></strong> — financial literacy tip card. See <a href="#tip-of-the-day">TipOfTheDay</a>.</li>
+</ol>
+
+<h3>Step 10: Assemble App.jsx</h3>
+<p>Create <code>src/App.jsx</code> — the root component that imports all child components, manages global state, and defines the responsive layout. See <a href="#app-jsx">App.jsx</a>.</p>
+
+<h3>Step 11: Set Up the Entry Point</h3>
+<p>Create <code>src/main.jsx</code>:</p>
+<pre><code>import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.jsx'
+
+createRoot(document.getElementById('root')).render(
+  &lt;StrictMode&gt;
+    &lt;App /&gt;
+  &lt;/StrictMode&gt;,
+)</code></pre>
+
+<h3>Step 12: Update index.html</h3>
+<p>Add the Inter font from Google Fonts and update the title:</p>
+<pre><code>&lt;link rel="preconnect" href="https://fonts.googleapis.com" /&gt;
+&lt;link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /&gt;
+&lt;link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet" /&gt;
+&lt;title&gt;FinanceFlow — Smart Budgeting &amp; Financial Literacy&lt;/title&gt;</code></pre>
+
+<h3>Step 13: Run and Verify</h3>
+<pre><code>npm run dev</code></pre>
+<p>Open the URL shown in the terminal. Verify:</p>
+<ul>
+  <li>✅ Page loads with the blue gradient header</li>
+  <li>✅ Tip of the Day shows a financial tip</li>
+  <li>✅ You can add income and expense transactions</li>
+  <li>✅ Transactions appear in the list sorted by date</li>
+  <li>✅ Charts update as you add transactions</li>
+  <li>✅ Dark mode toggle works</li>
+  <li>✅ Data persists after browser refresh</li>
+</ul>
+
+<!-- ─── ADDING CATEGORIES ─── -->
+<h2 id="adding-categories">Adding Categories</h2>
+<p>Categories are defined as simple arrays in <code>src/utils/helpers.js</code>:</p>
+<pre><code>// Add a new income category:
+export const INCOME_CATEGORIES = [
+  'Salary',
+  'Freelance',
+  // ...
+  'YouTube Revenue',    // ← Add new entry here
+];
+
+// Add a new expense category:
+export const EXPENSE_CATEGORIES = [
+  'Housing',
+  'Food &amp; Groceries',
+  // ...
+  'Pet Care',           // ← Add new entry here
+];</code></pre>
+<p>The <code>TransactionForm</code> dropdown automatically picks up the change — no other modifications needed.</p>
+
+<!-- ─── ADDING TIPS ─── -->
+<h2 id="adding-tips">Adding Financial Tips</h2>
+<p>Open <code>src/data/financialTips.js</code> and add a new object to the array:</p>
+<pre><code>{
+  title: "Your Tip Title",
+  tip: "The full tip text explaining the concept...",
+  category: "Budgeting"   // Use an existing category or create a new one
+},</code></pre>
+<p>The tip rotation automatically adjusts to the new array length. No code changes needed elsewhere.</p>
+
+<!-- ─── CUSTOMIZING CHARTS ─── -->
+<h2 id="customizing-charts">Customizing Charts</h2>
+<h3>Change Bar Chart Colors</h3>
+<p>In <code>Charts.jsx</code>, modify the <code>backgroundColor</code> values in the datasets:</p>
+<pre><code>datasets: [
+  { label: 'Income', backgroundColor: '#10b981', ... },  // ← Change this hex
+  { label: 'Expenses', backgroundColor: '#ef4444', ... }, // ← Change this hex
+]</code></pre>
+
+<h3>Change Doughnut Category Colors</h3>
+<p>Edit the <code>CATEGORY_COLORS</code> array at the top of <code>Charts.jsx</code>:</p>
+<pre><code>const CATEGORY_COLORS = [
+  '#3b82f6', '#ef4444', '#10b981', ...  // Add or modify colors here
+];</code></pre>
+
+<h3>Change Doughnut Cutout Size</h3>
+<p>In <code>doughnutOptions</code>, adjust the <code>cutout</code> percentage. <code>'65%'</code> creates a ring; <code>'0%'</code> creates a full pie chart:</p>
+<pre><code>cutout: '65%',  // Try '50%' for a thicker ring, or '0%' for a pie chart</code></pre>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!--  REFERENCE                                      -->
+<!-- ═══════════════════════════════════════════════ -->
+
+<h2 id="props-reference">Props Reference</h2>
+<table>
+  <thead><tr><th>Component</th><th>Prop</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="3"><code>Header</code></td><td><code>totals</code></td><td><code>{ income, expenses, balance }</code></td><td>Yes</td><td>Financial summary numbers</td></tr>
+    <tr><td><code>darkMode</code></td><td><code>boolean</code></td><td>Yes</td><td>Current theme state</td></tr>
+    <tr><td><code>onToggleDarkMode</code></td><td><code>() =&gt; void</code></td><td>Yes</td><td>Theme toggle callback</td></tr>
+    <tr><td><code>TransactionForm</code></td><td><code>onAdd</code></td><td><code>(transaction) =&gt; void</code></td><td>Yes</td><td>Called with new transaction on submit</td></tr>
+    <tr><td rowspan="2"><code>TransactionList</code></td><td><code>transactions</code></td><td><code>Array</code></td><td>Yes</td><td>Full transactions array</td></tr>
+    <tr><td><code>onDelete</code></td><td><code>(id) =&gt; void</code></td><td>Yes</td><td>Called with ID to remove</td></tr>
+    <tr><td rowspan="2"><code>Charts</code></td><td><code>transactions</code></td><td><code>Array</code></td><td>Yes</td><td>Full transactions array</td></tr>
+    <tr><td><code>darkMode</code></td><td><code>boolean</code></td><td>Yes</td><td>Adapts chart colors to theme</td></tr>
+    <tr><td><code>TipOfTheDay</code></td><td colspan="4"><em>No props — self-contained component</em></td></tr>
+  </tbody>
+</table>
+
+<h2 id="localstorage-keys">localStorage Keys</h2>
+<table>
+  <thead><tr><th>Key</th><th>Type</th><th>Set By</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><code>financeflow_transactions</code></td><td><code>JSON Array</code></td><td><code>App.jsx</code></td><td>All income and expense transactions</td></tr>
+    <tr><td><code>financeflow_darkmode</code></td><td><code>JSON boolean</code></td><td><code>App.jsx</code></td><td>Dark mode preference (true/false)</td></tr>
+    <tr><td><code>financeflow_tip</code></td><td><code>JSON { index, date }</code></td><td><code>TipOfTheDay</code></td><td>Current tip index and the date it was set</td></tr>
+  </tbody>
+</table>
+
+<div class="callout callout-warn">
+  <div class="callout-title">⚠️ Data Reset</div>
+  To completely reset the application, open the browser's DevTools → Application → Local Storage and delete the keys listed above. Alternatively, run <code>localStorage.clear()</code> in the console (this clears ALL localStorage for the domain).
+</div>
+
+<h2 id="dependencies">Dependencies</h2>
+<h3>Production Dependencies</h3>
+<table>
+  <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>react</code></td><td>^19.2.4</td><td>Core React library</td></tr>
+    <tr><td><code>react-dom</code></td><td>^19.2.4</td><td>React DOM renderer</td></tr>
+    <tr><td><code>chart.js</code></td><td>^4.5.1</td><td>Canvas charting library</td></tr>
+    <tr><td><code>react-chartjs-2</code></td><td>^5.3.1</td><td>React wrapper for Chart.js</td></tr>
+    <tr><td><code>lucide-react</code></td><td>^1.7.0</td><td>SVG icon components</td></tr>
+    <tr><td><code>tailwindcss</code></td><td>^4.2.2</td><td>Utility-first CSS framework</td></tr>
+    <tr><td><code>@tailwindcss/vite</code></td><td>^4.2.2</td><td>Vite plugin for Tailwind v4</td></tr>
+  </tbody>
+</table>
+
+<h3>Dev Dependencies</h3>
+<table>
+  <thead><tr><th>Package</th><th>Version</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td><code>vite</code></td><td>^8.0.1</td><td>Build tool and dev server</td></tr>
+    <tr><td><code>@vitejs/plugin-react</code></td><td>^6.0.1</td><td>React support for Vite (JSX, Fast Refresh)</td></tr>
+    <tr><td><code>eslint</code></td><td>^9.39.4</td><td>JavaScript linter</td></tr>
+    <tr><td><code>eslint-plugin-react-hooks</code></td><td>^7.0.1</td><td>Linting rules for React hooks</td></tr>
+    <tr><td><code>eslint-plugin-react-refresh</code></td><td>^0.5.2</td><td>Ensures components are Fast Refresh compatible</td></tr>
+    <tr><td><code>@types/react</code></td><td>^19.2.14</td><td>TypeScript types for React (used by IDE)</td></tr>
+    <tr><td><code>@types/react-dom</code></td><td>^19.2.3</td><td>TypeScript types for React DOM (used by IDE)</td></tr>
+    <tr><td><code>globals</code></td><td>^17.4.0</td><td>Global variables definitions for ESLint</td></tr>
+  </tbody>
+</table>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3>Dark mode doesn't work</h3>
+<p><strong>Cause:</strong> Missing <code>@custom-variant dark</code> directive in <code>index.css</code>.</p>
+<p><strong>Fix:</strong> Ensure <code>src/index.css</code> contains this line after the Tailwind import:</p>
+<pre><code>@custom-variant dark (&amp;:where(.dark, .dark *));</code></pre>
+<p>Without this, Tailwind v4 defaults to <code>prefers-color-scheme: dark</code> (OS-level) instead of the <code>.dark</code> class.</p>
+
+<h3>Charts don't render</h3>
+<p><strong>Cause:</strong> Chart.js modules not registered.</p>
+<p><strong>Fix:</strong> Ensure <code>Charts.jsx</code> includes:</p>
+<pre><code>ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);</code></pre>
+
+<h3>Data lost after clearing browser cache</h3>
+<p><strong>Expected behavior.</strong> All data is stored in <code>localStorage</code>. Clearing browser data removes it. There is no server-side backup. Consider adding a CSV export feature for data portability.</p>
+
+<h3>Port already in use</h3>
+<p><strong>Cause:</strong> Another process is using port 5173.</p>
+<p><strong>Fix:</strong> Vite automatically picks the next available port. Check the terminal output for the actual URL (e.g., <code>http://localhost:5174</code>).</p>
+
+<h3>"Module not found" error on npm run dev</h3>
+<p><strong>Cause:</strong> Dependencies not installed.</p>
+<p><strong>Fix:</strong> Run <code>npm install</code> to install all packages from <code>package.json</code>.</p>
+
+<!-- ─── END ─── -->
+<div style="margin-top: 64px; padding-top: 24px; border-top: 2px solid var(--border); text-align: center;">
+  <p style="color: var(--text-muted); font-size: .85rem;">
+    FinanceFlow Documentation v1.0 &mdash; Last updated March 2026<br/>
+    Built with React 19 &bull; Vite 8 &bull; Tailwind CSS 4 &bull; Chart.js 4
+  </p>
+</div>
+
+</main>
+</div>
+
+<!-- ── Scripts ── -->
+<script>
+  // Restore dark mode preference
+  if (localStorage.getItem('docs-theme') === 'dark') {
+    document.body.classList.add('dark');
+  }
+
+  // Active TOC highlighting on scroll
+  const tocLinks = document.querySelectorAll('.toc a[href^="#"]');
+  const sections = Array.from(tocLinks).map(link => {
+    const id = link.getAttribute('href').slice(1);
+    return { link, el: document.getElementById(id) };
+  }).filter(s => s.el);
+
+  function updateActiveToc() {
+    let current = sections[0];
+    for (const s of sections) {
+      if (s.el.getBoundingClientRect().top <= 100) current = s;
+    }
+    tocLinks.forEach(l => l.classList.remove('active'));
+    if (current) current.link.classList.add('active');
+  }
+
+  window.addEventListener('scroll', updateActiveToc, { passive: true });
+  updateActiveToc();
+</script>
+
+</body>
+</html>
