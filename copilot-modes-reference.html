@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copilot Chat Modes Reference</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; color: #1e1e1e; line-height: 1.6; }
+        h1 { border-bottom: 2px solid #0078d4; padding-bottom: .5rem; }
+        .mode { background: #f5f5f5; border-left: 4px solid #0078d4; padding: 1rem 1.25rem; margin: 1.5rem 0; border-radius: 0 8px 8px 0; }
+        .mode h2 { margin-top: 0; }
+        .mode.agent  { border-color: #2ea043; }
+        .mode.ask    { border-color: #0078d4; }
+        .mode.plan   { border-color: #8957e5; }
+        kbd { background: #e1e1e1; padding: 2px 6px; border-radius: 4px; font-size: .9em; }
+        .tldr { font-size: 1.1em; font-weight: 600; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <h1>GitHub Copilot Chat Modes</h1>
+    <p>VS Code's Copilot Chat offers three interaction modes, each designed for a different stage of your workflow.</p>
+
+    <div class="mode agent">
+        <h2>🤖 Agent Mode</h2>
+        <p><strong>Full autonomy</strong> — can read files, edit files, run terminal commands, and take multi-step actions to complete tasks.</p>
+        <p><strong>Best for:</strong> implementing features, fixing bugs, refactoring code, running tests — anything that requires <em>making changes</em>.</p>
+        <p>Works iteratively: it plans, executes, validates, and adjusts until the task is done.</p>
+        <p>Shortcut: <kbd>⇧</kbd> <kbd>⌘</kbd> <kbd>I</kbd></p>
+    </div>
+
+    <div class="mode ask">
+        <h2>❓ Ask Mode</h2>
+        <p><strong>Read-only</strong> — can search and read the codebase but <strong>cannot</strong> modify files or run commands.</p>
+        <p><strong>Best for:</strong> understanding code, getting explanations, asking architecture questions, debugging guidance, or learning how something works.</p>
+        <p>Provides answers with references to specific files and code, but leaves implementation to you.</p>
+    </div>
+
+    <div class="mode plan">
+        <h2>📋 Plan Mode</h2>
+        <p><strong>Planning only</strong> — analyzes the codebase and produces a step-by-step plan for how to accomplish a task, but <strong>does not execute</strong> the plan.</p>
+        <p><strong>Best for:</strong> scoping out work before committing to changes, reviewing an approach before implementation, or breaking down complex tasks.</p>
+        <p>You can review and refine the plan, then switch to Agent mode to carry it out.</p>
+    </div>
+
+    <p class="tldr"><strong>In short:</strong> Ask = <em>explain</em> &nbsp;|&nbsp; Plan = <em>strategize</em> &nbsp;|&nbsp; Agent = <em>do</em></p>
+</body>
+</html>
