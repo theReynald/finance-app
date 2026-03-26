@@ -18,3 +18,4 @@ If you are developing a production application, we recommend using TypeScript wi
 ## Source Control
 This line added just to commit Lesson 9 - Source Control
 This line added just to commit Lesson 10 - Adding an MCP Server
+This line added just to commit Lesson 11 - Managing Models
