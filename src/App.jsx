@@ -22,15 +22,30 @@
  */
 
 import { useCallback } from 'react';
+import { motion } from 'framer-motion';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { calculateTotals } from './utils/helpers';
 
 // --- UI Components ---
-import Header from './components/Header';            // Top banner: income, expenses, balance summary + dark mode toggle
-import TransactionForm from './components/TransactionForm';  // Form to add a new income or expense entry
-import TransactionList from './components/TransactionList';  // Scrollable list of all transactions with delete
-import Charts from './components/Charts';            // Bar chart (monthly income vs expenses) & doughnut (expense breakdown)
-import TipOfTheDay from './components/TipOfTheDay';  // Financial literacy tip card with "New Tip" button
+import Header from './components/Header';
+import TransactionForm from './components/TransactionForm';
+import TransactionList from './components/TransactionList';
+import Charts from './components/Charts';
+import TipOfTheDay from './components/TipOfTheDay';
+
+const stagger = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1, delayChildren: 0.05 } },
+};
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { type: 'spring', stiffness: 260, damping: 24 },
+  },
+};
 
 export default function App() {
   // --- Global State ---
@@ -72,61 +87,41 @@ export default function App() {
   // --- Render ---
 
   return (
-    // The outermost div carries the 'dark' class when dark mode is active.
-    // Tailwind's dark: variants (configured via @custom-variant in index.css)
-    // use this class to swap colors throughout the entire component tree.
     <div className={darkMode ? 'dark' : ''}>
+      <div className="app-bg bg-bg dark:bg-bg-dark transition-colors">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            animate="visible"
+            className="space-y-8"
+          >
+            <motion.div variants={fadeUp}>
+              <Header totals={totals} darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
+            </motion.div>
 
-      {/* Full-page background wrapper — switches between light (bg-bg) and dark (bg-bg-dark) */}
-      <div className="min-h-screen bg-bg dark:bg-bg-dark transition-colors">
+            <motion.div variants={fadeUp}>
+              <TipOfTheDay />
+            </motion.div>
 
-        {/* Centered content container with responsive horizontal padding */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+              <motion.div variants={fadeUp} className="lg:col-span-5 space-y-8">
+                <TransactionForm onAdd={addTransaction} />
+                <TransactionList transactions={transactions} onDelete={deleteTransaction} />
+              </motion.div>
 
-          {/* ──── Header ────
-              Displays total income, total expenses, and net balance.
-              Also contains the dark mode toggle button (sun/moon icon). */}
-          <Header totals={totals} darkMode={darkMode} onToggleDarkMode={toggleDarkMode} />
-
-          {/* ──── Tip of the Day ────
-              Shows a random financial literacy tip from a curated list of 54 tips.
-              Persists the currently shown tip in localStorage so the user sees a
-              fresh tip each calendar day, with a "New Tip" button to cycle manually. */}
-          <TipOfTheDay />
-
-          {/* ──── Main Content Grid ────
-              Responsive 12-column layout:
-              • Mobile: single stacked column
-              • Desktop (lg+): 5-col sidebar + 7-col main area */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            {/* Left column: input form + transaction history */}
-            <div className="lg:col-span-5 space-y-6">
-              {/* Form for adding new income/expense entries.
-                  Emits a complete transaction object via the onAdd callback. */}
-              <TransactionForm onAdd={addTransaction} />
-
-              {/* Chronological list of all transactions (newest first).
-                  Each row shows category, description, date, and amount.
-                  Delete button appears on hover for each row. */}
-              <TransactionList transactions={transactions} onDelete={deleteTransaction} />
+              <motion.div variants={fadeUp} className="lg:col-span-7">
+                <Charts transactions={transactions} darkMode={darkMode} />
+              </motion.div>
             </div>
 
-            {/* Right column: visual analytics */}
-            <div className="lg:col-span-7">
-              {/* Two charts:
-                  1. Bar chart — monthly income vs expenses side by side
-                  2. Doughnut chart — expense breakdown by category
-                  Both update reactively as transactions are added or removed.
-                  darkMode prop is passed so chart colors adapt to the current theme. */}
-              <Charts transactions={transactions} darkMode={darkMode} />
-            </div>
-          </div>
-
-          {/* ──── Footer ──── */}
-          <footer className="text-center text-text-muted text-xs py-4">
-            FinanceFlow &mdash; Track smarter, live better. Data stored locally in your browser.
-          </footer>
+            <motion.footer
+              variants={fadeUp}
+              className="text-center text-text-muted text-xs py-6 font-medium tracking-wide"
+            >
+              FinanceFlow &mdash; Track smarter, live better. Data stored locally in your browser.
+            </motion.footer>
+          </motion.div>
         </div>
       </div>
     </div>
